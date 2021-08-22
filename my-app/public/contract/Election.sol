@@ -1,21 +1,21 @@
 pragma solidity ^0.8.0;
-// written for Solidity version 0.4.18 and above that doesnt break functionality
+
 
 contract Election {
     // an event that is called whenever a Candidate is added so the frontend could
     // appropriately display the candidate with the right element id (it is used
-    // to vote for the candidate, since it is one of arguments for the function "vote")
+    // to vote for the candidate, since it is the argument for the function "vote")
     event AddedCandidate(uint candidateID);
+    
 
-    // describes a Voter, which has an id and the ID of the candidate they voted for
     address owner;
    
    
     // describes a Candidate
     struct Candidate {
         string  name;
-        string  party; 
-        uint vote;
+        string  party;
+        uint vote; 
         // "bool doesExist" is to check if this Struct exists
         // This is so we can keep track of the candidates 
         bool doesExist; 
@@ -24,15 +24,16 @@ contract Election {
     // These state variables are used keep track of the number of Candidates/Voters 
     // and used to as a way to index them     
     uint numCandidates = 0; // declares a state variable - number Of Candidates
-    uint numVoters;
+
 
     
-    // Think of these as a hash table, with the key as a uint and value of 
-    // the struct Candidate/Voter. These mappings will be used in the majority
+    // These mappings will be used in the majority
     // of our transactions/calls
-    // These mappings will hold all the candidates and Voters respectively
+
     mapping (uint => Candidate) candidates;
     mapping(address => bool) newAdmin;
+    
+    // This mapping will be used to confirm that each voter can only vote once for each candidate. 
     mapping(address => mapping(uint => bool)) hasVotedFor;
     
     constructor () public {
@@ -42,11 +43,15 @@ contract Election {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *  These functions perform transactions, editing the mappings *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+     
+     // function addAdmin help to msg.sender to add mutiple admin address
 function addAdmin (address _newOwner) public {
      require(msg.sender == owner, 'only owner can call this function'); 
     newAdmin[_newOwner] = true;
     
 }
+
+// this function is used to addCandidate to an election, it can only be called by msg.sender of added admin(s). 
 
    function addCandidate(string memory name, string memory party)  public returns(uint) {
          require(newAdmin[msg.sender] == true, 'only authorized address can call this function'); 
@@ -64,6 +69,7 @@ function vote(uint candidateID) public {
         // checks if the struct exists for that candidate
         require (candidates[candidateID].doesExist == true, 'candidate does not exist') ;
         require (hasVotedFor[msg.sender][candidateID] == false, 'You can not vote for a candidate twice');
+        //Add a vote to the candidateID
             candidates[candidateID] =Candidate( candidates[candidateID].name,candidates[candidateID].party,candidates[candidateID].vote + 1,candidates[candidateID].doesExist);
             hasVotedFor[msg.sender][candidateID] = true;
     }
@@ -76,10 +82,13 @@ function vote(uint candidateID) public {
     // finds the total amount of votes for a specific candidate by looping
     // through voters 
     function totalVotes(uint candidateID) view public returns (uint) {
+    // check if the struct exists for the candidate
        require (candidates[candidateID].doesExist == true, 'candidate does not exist') ;
+       return the total number of voters for a candidate
        return candidates[candidateID].vote;
     }
 
+  // finds the total amount of candidate 
     function getNumOfCandidates() public view returns(uint) {
         return numCandidates;
     }

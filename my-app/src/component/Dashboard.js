@@ -374,6 +374,15 @@ const Dashboard = (props) => {
           </Card>
       </Card.Text>
       </Card.Body> 
+        
+       <Card.Body style={{marginBottom:'-20px'}}  className='bg-primary text-light' >
+      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Candidate ID:</Card.Title>
+      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
+          <Card  className="text-dark text-center shadow-sm rounded" style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
+          {Candidates[0]}
+          </Card>
+      </Card.Text>
+      </Card.Body> 
      
       <Card.Body style={{marginBottom:'-20px'}} className='bg-primary text-light'> <hr style={{height:'2px',borderWidth:'0', color:'black',backgroundColor:'black', marginTop:'0px'}}/>
       <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Total Vote:</Card.Title>

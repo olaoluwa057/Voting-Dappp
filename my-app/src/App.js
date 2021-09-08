@@ -23,7 +23,7 @@ state={
 
   contractDetails:{
 
-    contractAddress: "0x38e2c3070f219340E74F6FD684d33FF3e360Ae0A",
+    contractAddress: "0xD672229Bd2B34ec8e0c44dB5148518d5b93d6F73",
    
   },
 

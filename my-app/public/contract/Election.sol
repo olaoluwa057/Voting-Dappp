@@ -16,14 +16,18 @@ contract Election {
         string  name;
         string  party;
         uint vote; 
+        uint candidateID;
+        
         // "bool doesExist" is to check if this Struct exists
         // This is so we can keep track of the candidates 
         bool doesExist; 
     }
+    
+    Candidate[] allCandidate;
 
     // These state variables are used keep track of the number of Candidates/Voters 
     // and used to as a way to index them     
-    uint numCandidates = 0; // declares a state variable - number Of Candidates
+    uint numCandidates  = 0; // declares a state variable - number Of Candidates
 
 
     
@@ -42,11 +46,17 @@ contract Election {
     }
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *  These functions perform transactions, editing the mappings *
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+     function AllCandidate () view public returns(Candidate[] memory){
+         
+         return allCandidate;
+     }
      
      // function addAdmin help to msg.sender to add mutiple admin address
 function addAdmin (address _newOwner) public {
      require(msg.sender == owner, 'only owner can call this function'); 
+     
     newAdmin[_newOwner] = true;
     
 }
@@ -57,21 +67,30 @@ function addAdmin (address _newOwner) public {
          require(newAdmin[msg.sender] == true, 'only authorized address can call this function'); 
         // candidateID is the return variable
          numCandidates = numCandidates + 1;
+         
         uint candidateID = numCandidates;
         
         // Create new Candidate Struct with name and saves it to storage.
-        candidates[candidateID] = Candidate(name,party,0,true);
-      emit  AddedCandidate(candidateID);
+        candidates[candidateID] = Candidate(name,party,0,candidateID,true);
+       Candidate memory candidate = Candidate(name,party,0,candidateID,true);
+       allCandidate.push(candidate);
+        emit  AddedCandidate(candidateID);
        return candidateID;
+        
     }
 
-function vote(uint candidateID) public {
+function vote(uint candidateID) public returns(uint) {
         // checks if the struct exists for that candidate
         require (candidates[candidateID].doesExist == true, 'candidate does not exist') ;
         require (hasVotedFor[msg.sender][candidateID] == false, 'You can not vote for a candidate twice');
         //Add a vote to the candidateID
-            candidates[candidateID] =Candidate( candidates[candidateID].name,candidates[candidateID].party,candidates[candidateID].vote + 1,candidates[candidateID].doesExist);
+        //update candidates mapping
+           candidates[candidateID] =Candidate( candidates[candidateID].name,candidates[candidateID].party,candidates[candidateID].vote + 1,candidates[candidateID].candidateID,candidates[candidateID].doesExist);
+            //update candidates array decremented the ID by one to get the position in the array beacuse array indexing start from zero
+            allCandidate[candidateID - 1]= Candidate( candidates[candidateID].name,candidates[candidateID].party,candidates[candidateID].vote,candidates[candidateID].candidateID,candidates[candidateID].doesExist);
             hasVotedFor[msg.sender][candidateID] = true;
+            
+            return candidates[candidateID].vote;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -84,7 +103,7 @@ function vote(uint candidateID) public {
     function totalVotes(uint candidateID) view public returns (uint) {
     // check if the struct exists for the candidate
        require (candidates[candidateID].doesExist == true, 'candidate does not exist') ;
-       return the total number of voters for a candidate
+      //return the total number of voters for a candidate;
        return candidates[candidateID].vote;
     }
 

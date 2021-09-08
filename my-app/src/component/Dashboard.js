@@ -1,9 +1,13 @@
 import React from 'react';
 import { Container, Col, Row, Card, Button, Modal,Form, InputGroup, FormControl } from 'react-bootstrap';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import abi from "./election.json"
+import './Box.css';
+import './Boxes.css';
 
-import ModalHeader from 'react-bootstrap/esm/ModalHeader';
+
+
+//import ModalHeader from 'react-bootstrap/esm/ModalHeader';
 ///import {useContractFunction} from '@usedapp/core'
 /// import { symbol } from 'prop-types';
 ///import Web3 from 'web3';
@@ -13,7 +17,7 @@ const initialValues = {
     candidateName: "",
     candidateParty: "",
     UID: "",
-    candidateID: "",
+    candidateID:'',
     ID:"",
     newAdmin:"",
     amount:"",
@@ -37,17 +41,21 @@ const Dashboard = (props) => {
     const [NumOfCandidates, setSupply] = useState('');
     const [NumVoter, setVoters] = useState('');
     const [Candidates, setCandidate] = useState('');
-    const [votes, setVote] = useState('');
-    const [display, setDisplay] = useState(false);
-
-
-    const wethContractAddress = '0x38e2c3070f219340E74F6FD684d33FF3e360Ae0A';
+    const [votes, setVote] = useState('0');
+    const [display, setDisplay] = useState('');
+    //const [canID, setCanID] = useState('')
+    const [allCandidate, setCandidates] = useState([])
+   
+    
+ 
+  
+//contract instance
+    const wethContractAddress = '0xD672229Bd2B34ec8e0c44dB5148518d5b93d6F73';
 
     const contract =  new props.web3Instance.eth.Contract(abi, wethContractAddress);
-
+// input handler
     
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+ 
 
       const handleInputChange = (e) => {
         
@@ -60,35 +68,56 @@ const Dashboard = (props) => {
         console.log(values, 'values')
       };
 
+     
 
 // function to add candidate
       async function sendTransaction () {
-
         setLoading(true)
         const addresses = await props.web3Instance.eth.getAccounts();
-               /// await send(values.tokenName, values.tokenSymbol, values.tokenDecimal, values.tokenAllowed 
               try{
-                await contract.methods.addCandidate(values.candidateName, values.candidateParty).send({
+                const result =   await contract.methods.addCandidate(values.candidateName, values.candidateParty).send({
                     from: addresses[0]
-               });
+               })
+               //console.log(result)
+               const Id = await result.events.AddedCandidate.returnValues.candidateID ;
+               //console.log(Id, 'i am here')
+                //setCanID(Id);
+
+            //  const candidate =   await  contract.methods.getCandidate( Id ).call() 
+            //  setCandidate(candidate)
                  }
+                 
                  catch{
                    alert('input the right parameters ')
-                 }
+                 }     
                 
-              setLoading(false)
+                 setLoading(false)  ; 
+                  
     }
+    
+    //console.log(canID);
+// function allCan returns event
+    async function allCan () {
+      const allCandidate =   await  contract.methods.AllCandidate().call()
+      console.log(allCandidate, 'this is allCandidate')
+      setCandidates(allCandidate)
+    }
+
+   // async function getCandidate () {
+     // const address = await props.web3Instance.eth.getAccounts(    
+  //  }
+
 
     //function to vote a candidate, function can only be called once by an address
     async function Vote () {
-
         setLoading(true)
         const addresses = await props.web3Instance.eth.getAccounts();
-               /// await send(values.tokenName, values.tokenSymbol, values.tokenDecimal, values.tokenAllowed 
+              
               try{
                 await contract.methods.vote(values.ID).send({
                     from: addresses[0]
-               });
+               })
+
                  }
                  catch{
                    alert('You can not vote for a candidate more than once')
@@ -101,7 +130,7 @@ const Dashboard = (props) => {
 
         setLoading(true)
         const addresses = await props.web3Instance.eth.getAccounts();
-               /// await send(values.tokenName, values.tokenSymbol, values.tokenDecimal, values.tokenAllowed 
+           
               try{
                 await contract.methods.addAdmin(values.newAdmin).send({
                     from: addresses[0]
@@ -113,9 +142,10 @@ const Dashboard = (props) => {
                 
               setLoading(false)
     }
-
+//function shows total number of candidate in an election
     async function NumOfCandidate () {
         const address = await props.web3Instance.eth.getAccounts()
+        
         
       const supply =   await  contract.methods.getNumOfCandidates().call({
           from: address[0]
@@ -123,66 +153,70 @@ const Dashboard = (props) => {
       
         setSupply(supply)
       }
-      NumOfCandidate()
-
-      async function NumOfVoters () {
-        const address = await props.web3Instance.eth.getAccounts()
-        
-      const voter =   await  contract.methods.getNumOfVoters().call({
-          from: address[0]
-        })
-      
-        setVoters(voter)
-      }
-      NumOfVoters()
-
-      async function getCandidate () {
-        const address = await props.web3Instance.eth.getAccounts()
-        
-      const candidate =   await  contract.methods.getCandidate(values.candidateID).call({
-          from: address[0]
-        })
-      
-        setCandidate(candidate)
-      }
-      async function TotalVote () {
-        const address = await props.web3Instance.eth.getAccounts()
-        
-      const totalVote =   await  contract.methods.totalVotes(values.candidateID).call({
-          from: address[0]
-        })
-      
-        setVote(totalVote)
-      }
-
-     async function callBoth () {
-
-        try{
-            await getCandidate();
-            await TotalVote();
-             setDisplay(true)
-        }
-        catch{
-                alert('input the right parameter')
-        }
-        
-      }
-    
-
-     
-
-
-
-    
-
      
  
+      const list =allCandidate.map(Data=> {
+        console.log(Data, 'Data is here')
+        return(
+          <div >
+            
+            <Card className="shadow rounded box"   style={{width:'25rem', position: 'flex', flexDirection:'column'}}   >     
+    <Card.Header as="h5" style={{textAlign:'center'}} >
+   
+      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Candidate Name:</Card.Title>
+      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
+          <Card className='text-dark shadow-sm rounded' style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
+                {Data.name}
+          </Card>
+      </Card.Text>
+    </Card.Header>
+    <Card.Body style={{marginBottom:'-20px'}}  className='bg-primary text-light' >
+      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Candidate Party:</Card.Title>
+      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
+          <Card  className="text-dark text-center shadow-sm rounded" style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
+          {Data.party}
+          </Card>
+      </Card.Text>
+      </Card.Body> 
+      <Card.Body style={{marginBottom:'-20px'}}  className='bg-primary text-light' >
+      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Candidate ID:</Card.Title>
+      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
+          <Card  className="text-dark text-center shadow-sm rounded" style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
+          {Data.candidateID}
+          </Card>
+      </Card.Text>
+      </Card.Body> 
+     
+      <Card.Body style={{marginBottom:'-20px'}} className='bg-primary text-light'> <hr style={{height:'2px',borderWidth:'0', color:'black',backgroundColor:'black', marginTop:'0px'}}/>
+      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Total Vote:</Card.Title>
+      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
+          <Card className="text-dark text-center" style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
+          {Data.vote}
+          </Card>
+      </Card.Text>
+      </Card.Body> 
+    
+    
+   
+</Card>  
+    
+          </div>
+        )
+        })
+
+        useEffect(() => { // 
+          NumOfCandidate();
+          allCan();
+          }, []);
 
     return (
-        <div >
+        <div>
         
             
-<Container>
+<Container >
+
+
+
             <Form>
   <Row className="align-items-center">
     <Col sm={3} className="my-1">
@@ -322,7 +356,7 @@ const Dashboard = (props) => {
 </Container>
 
 <Container className="pt-5"  >
-<Col sm={3} className="my-1 ">
+{/* <Col sm={3} className="my-1 ">
       <Form.Label htmlFor="inlineFormInputGroupUsername" visuallyHidden>
         Candidate ID
       </Form.Label>
@@ -351,55 +385,12 @@ const Dashboard = (props) => {
                         {!loading && <span>getCandidate</span>}
           </Button>
     </Col>
-
+    </div>
+      */}
     <br/>
-    <>
-    {
 
-  display?<Card className="shadow rounded"   style={{width:'40rem'}}  >     
-    <Card.Header as="h5" style={{textAlign:'center'}} >
-   
-      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Candidate Name:</Card.Title>
-      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
-          <Card className='text-dark shadow-sm rounded' style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
-                {Candidates[1]}
-          </Card>
-      </Card.Text>
-    </Card.Header>
-    <Card.Body style={{marginBottom:'-20px'}}  className='bg-primary text-light' >
-      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Candidate Address:</Card.Title>
-      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
-          <Card  className="text-dark text-center shadow-sm rounded" style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
-          {Candidates[2]}
-          </Card>
-      </Card.Text>
-      </Card.Body> 
-      <Card.Body style={{marginBottom:'-20px'}}  className='bg-primary text-light' >
-      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Candidate ID:</Card.Title>
-      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
-          <Card  className="text-dark text-center shadow-sm rounded" style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
-          {Candidates[0]}
-          </Card>
-      </Card.Text>
-      </Card.Body> 
-     
-      <Card.Body style={{marginBottom:'-20px'}} className='bg-primary text-light'> <hr style={{height:'2px',borderWidth:'0', color:'black',backgroundColor:'black', marginTop:'0px'}}/>
-      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Total Vote:</Card.Title>
-      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
-          <Card className="text-dark text-center" style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
-          {votes}
-          </Card>
-      </Card.Text>
-      </Card.Body> 
-    
-    
-   
-</Card>  :null
-
-      
-       
-}
-</>
+ <div  className="grid pb-5" > {list}</div>
+ 
 
 </Container>
         </div>

@@ -103,7 +103,11 @@ function vote(uint candidateID) public returns(uint) {
     function totalVotes(uint candidateID) view public returns (uint) {
     // check if the struct exists for the candidate
        require (candidates[candidateID].doesExist == true, 'candidate does not exist') ;
+<<<<<<< HEAD
       //return the total number of voters for a candidate;
+=======
+     //  return the total number of voters for a candidate
+>>>>>>> e4b3a0bddabb24998d5e550f96a09d24e0c28b7c
        return candidates[candidateID].vote;
     }
 

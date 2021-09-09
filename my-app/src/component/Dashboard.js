@@ -388,52 +388,6 @@ const Dashboard = (props) => {
     </div>
       */}
     <br/>
-<<<<<<< HEAD
-=======
-    <>
-    {
-
-  display?<Card className="shadow rounded"   style={{width:'40rem'}}  >     
-    <Card.Header as="h5" style={{textAlign:'center'}} >
-   
-      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Candidate Name:</Card.Title>
-      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
-          <Card className='text-dark shadow-sm rounded' style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
-                {Candidates[1]}
-          </Card>
-      </Card.Text>
-    </Card.Header>
-    <Card.Body style={{marginBottom:'-20px'}}  className='bg-primary text-light' >
-      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Candidate Address:</Card.Title>
-      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
-          <Card  className="text-dark text-center shadow-sm rounded" style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
-          {Candidates[2]}
-          </Card>
-      </Card.Text>
-      </Card.Body> 
-        
-       <Card.Body style={{marginBottom:'-20px'}}  className='bg-primary text-light' >
-      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Candidate ID:</Card.Title>
-      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
-          <Card  className="text-dark text-center shadow-sm rounded" style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
-          {Candidates[0]}
-          </Card>
-      </Card.Text>
-      </Card.Body> 
-     
-      <Card.Body style={{marginBottom:'-20px'}} className='bg-primary text-light'> <hr style={{height:'2px',borderWidth:'0', color:'black',backgroundColor:'black', marginTop:'0px'}}/>
-      <Card.Title  style={{display:'inline',float:"left",marginTop:'4px' }}>Total Vote:</Card.Title>
-      <Card.Text style={{float:"left", fontSize:'20px',marginLeft:"1rem"}}>
-          <Card className="text-dark text-center" style={{ minWidth: '8rem',padding: '5px 3px 5px 3px' }}>
-          {votes}
-          </Card>
-      </Card.Text>
-      </Card.Body> 
-    
-    
-   
-</Card>  :null
->>>>>>> e4b3a0bddabb24998d5e550f96a09d24e0c28b7c
 
  <div  className="grid pb-5" > {list}</div>
  
